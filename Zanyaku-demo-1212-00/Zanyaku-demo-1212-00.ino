@@ -194,7 +194,9 @@ float AE_HX711_getGram(char num)
 
   return data;
 }
-
+ //-------------------------------------------
+ //---         connect to  soracom.io      ---
+ //-------------------------------------------
 int connect2soracom(){
  SerialUSB.println("### Connecting to \"soracom.io\".");
  delay(5000);
@@ -210,7 +212,9 @@ int connect2soracom(){
  }
  return connectId;
 }
-
+ //-------------------------------------------
+ //--- Send the Axis data for soracom.io ---
+ //-------------------------------------------
 void sendAxisData(int x,int connId){
  char axisdata[100];  
  
