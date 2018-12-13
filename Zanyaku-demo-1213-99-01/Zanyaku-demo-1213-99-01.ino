@@ -23,7 +23,7 @@ float AE_HX711_getGram(char num);
 //---------------------------------------------------//
 typedef struct  {
   int axisVal;
-  float weightVal;
+  char weightVal[15];
   unsigned long  timestamp;
 } sdata_type;
 
@@ -41,11 +41,11 @@ ADXL345 Accel;
   char S1[20];
   char s[20];
   int diffAxisVal;
-  int diffWeightVal;
+  float diffWeightVal;
   int currentAxisVal;
   int prevAxisVal;
-  int currentWeightVal;
-  int prevWeightVal;
+  float currentWeightVal;
+  float prevWeightVal;
   int loopCounter;
 
   boolean connSuccess;
@@ -129,7 +129,8 @@ void loop() {
 
   data = AE_HX711_getGram(5);
   //sprintf(S1,"%s [g] (0x%4x)",dtostrf((data-offset), 5, 3, s),AE_HX711_Read());
-  SerialUSB.println(S1);
+  //SerialUSB.println(S1);
+  
   sprintf(S1,"%s",dtostrf((data-offset), 5, 3, s));
   SerialUSB.println("### Send weight data.");
   sprintf(weightdata, "{\"Weight data\":%s}", S1);
@@ -144,11 +145,13 @@ void loop() {
   diffWeightVal = currentWeightVal - prevWeightVal;
   //if(diffAxisVal >= WEIGHTLOSS){
   if(true){  
-     sdata[loopCounter].weightVal = currentWeightVal;
+    sprintf(S1,"%s",dtostrf((currentWeightVal-offset), 5, 3, s));
+    sprintf(weightdata, "{\"Weight data\":%s}", S1);
+     strcpy(sdata[loopCounter].weightVal,weightdata);
   }
 
   if(1 ){
-   sendWeightData(sdata[loopCounter].weightVal,connect2soracom());
+   sendWeightData(*(sdata[loopCounter].weightVal),connect2soracom());
   }
 
   prevAxisVal = currentAxisVal;
@@ -273,7 +276,7 @@ void sendWeightData(char s,int connId){
  //--- Send the weight data for soracom.io ---
  //-------------------------------------------
  SerialUSB.println("### Send weight data.");
- sprintf(weightdata, "{\"Weight data\":%s}", S1);
+ sprintf(weightdata, "{\"Weight data\":%s}", s);
  SerialUSB.print("Send:");
  SerialUSB.print(weightdata);
  SerialUSB.println("");
