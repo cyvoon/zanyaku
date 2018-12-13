@@ -19,15 +19,15 @@ float AE_HX711_getGram(char num);
 
 #define pin_clk   (WIOLTE_D19)
 //---------------------------------------------------//
-
 // sensor data　格納用構造体
-
 //---------------------------------------------------//
-struct sData {
-  int axisVal[5];
-  float weightVal[5];
+typedef struct  {
+  int axisVal;
+  float weightVal;
   unsigned long  timestamp;
-};
+} sdata_type;
+
+sdata_type sdata[10];
 //---------------------------------------------------//
 // ロードセル　シングルポイント　 RB-Phi-203　100ｇ
 //---------------------------------------------------//
