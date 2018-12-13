@@ -232,10 +232,11 @@ float AE_HX711_getGram(char num)
  //---         connect to  soracom.io      ---
  //-------------------------------------------
 int connect2soracom(){
- SerialUSB.println("### Connecting to \"soracom.io\".");
+
  delay(5000);
  if(!connSuccess){
    if (!Wio.Activate("soracom.io", "sora", "sora")) {
+     SerialUSB.println("### Connecting to \"soracom.io\".");
      SerialUSB.println("### ERROR! ###");
      connSuccess = false;
      return 0;
