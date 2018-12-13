@@ -12,6 +12,7 @@ long AE_HX711_Averaging(long adc,char num);
 float AE_HX711_getGram(char num);
 
 #define AXISLOSS (50)
+#define WEIGHTLOSS (100)
 //---------------------------------------------------//
 // ピンの設定
 //---------------------------------------------------//
@@ -26,7 +27,7 @@ typedef struct  {
   unsigned long  timestamp;
 } sdata_type;
 
-sdata_type sdata[10];
+sdata_type sdata[100];
 //---------------------------------------------------//
 // ロードセル　シングルポイント　 RB-Phi-203　100ｇ
 //---------------------------------------------------//
@@ -110,7 +111,8 @@ void loop() {
   currentAxisVal = x;
   
   diffAxisVal = currentAxisVal - prevAxisVal;
-  if(diffAxisVal >= AXISLOSS){
+  //if(diffAxisVal >= AXISLOSS){
+  if(true){  
      sdata[loopCounter].axisVal = currentAxisVal;
   }
   
@@ -134,13 +136,27 @@ void loop() {
   SerialUSB.print("Send:");
   SerialUSB.print(weightdata);
   SerialUSB.println("");
-/*
-  if(1 ){
-   connect2soracom()
-   sendWeighData(s,connect2soracom());
+
+  //--- 動いた値が誤差以上なら構造体へ格納 ---//
+ // currentWeightVal = weightdata;
+  currentWeightVal = data; // ???
+  
+  diffWeightVal = currentWeightVal - prevWeightVal;
+  //if(diffAxisVal >= WEIGHTLOSS){
+  if(true){  
+     sdata[loopCounter].weightVal = currentWeightVal;
   }
-*/
+
+  if(1 ){
+   sendWeightData(sdata[loopCounter].weightVal,connect2soracom());
+  }
+
   prevAxisVal = currentAxisVal;
+  prevWeightVal = currentWeightVal;
+  
+  if(loopCounter == 99){
+    loopCounter = 0;
+  }
   loopCounter++;
   err:
   delay(INTERVAL);
@@ -251,7 +267,7 @@ void sendAxisData(int data,int connId){
  }
 }
 
-void sendWeighData(char s,int connId){
+void sendWeightData(char s,int connId){
  char weightdata[100];  
  //-------------------------------------------
  //--- Send the weight data for soracom.io ---
